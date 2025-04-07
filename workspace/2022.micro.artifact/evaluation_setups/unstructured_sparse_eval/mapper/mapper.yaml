@@ -1,0 +1,20 @@
+mapper:
+  type: exhaustive
+  search_size: 1000
+  timeout: 3600
+  optimization_metrics:
+    - energy
+    - cycles
+  constraints:
+    - type: bypass
+      target: DRAM
+      bypass: false
+    - type: bypass
+      target: SMEM
+      bypass: false
+    - type: bypass
+      target: RF
+      bypass: false
+    - type: bypass
+      target: LRF
+      bypass: false 

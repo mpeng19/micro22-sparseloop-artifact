@@ -1,0 +1,73 @@
+ERT:
+  version: 0.3
+  tables:
+  - name: system.DRAM
+    actions:
+    - name: read
+      energy: 0  # Ideal: no cost for DRAM access
+    - name: write
+      energy: 0
+    - name: idle
+      energy: 0
+  - name: system.SM.Subpartition[0..3].PE[0..255].LRF
+    actions:
+    - name: write
+      energy: 0
+    - name: read
+      energy: 0
+    - name: gated_write
+      energy: 0
+    - name: gated_read
+      energy: 0
+    - name: metadata_read
+      energy: 0  # No metadata overhead
+    - name: metadata_write
+      energy: 0
+    - name: gated_metadata_read
+      energy: 0
+    - name: gated_metadata_write
+      energy: 0
+  - name: system.SM.Subpartition[0..3].PE[0..255].MAC
+    actions:
+    - name: mac_random
+      energy: 0  # Ideal: no computation cost
+    - name: mac_gated
+      energy: 0
+    - name: mac_skipped
+      energy: 0
+  - name: system.SM.Subpartition[0..3].RF
+    actions:
+    - name: write
+      energy: 0
+    - name: read
+      energy: 0
+    - name: gated_write
+      energy: 0
+    - name: gated_read
+      energy: 0
+    - name: metadata_read
+      energy: 0
+    - name: metadata_write
+      energy: 0
+    - name: gated_metadata_read
+      energy: 0
+    - name: gated_metadata_write
+      energy: 0
+  - name: system.SM.SMEM
+    actions:
+    - name: write
+      energy: 0
+    - name: read
+      energy: 0
+    - name: gated_write
+      energy: 0
+    - name: gated_read
+      energy: 0
+    - name: metadata_read
+      energy: 0
+    - name: metadata_write
+      energy: 0
+    - name: gated_metadata_read
+      energy: 0
+    - name: gated_metadata_write
+      energy: 0

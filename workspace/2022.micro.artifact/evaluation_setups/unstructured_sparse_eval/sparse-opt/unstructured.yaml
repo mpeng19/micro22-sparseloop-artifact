@@ -1,0 +1,12 @@
+sparse_optimizations:
+  version: 0.1
+  name: unstructured_sparse_optimizations
+  representation:
+    weights: CSR
+    activations: uncompressed
+  skipping: true
+  gating: true
+  metadata_cost: true
+  zero_cost: false
+  skip_threshold: 0
+  gating_threshold: 0

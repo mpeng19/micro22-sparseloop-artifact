@@ -1,0 +1,96 @@
+architecture:
+  version: 0.3
+  name: unstructured_sparse_tensor_core
+  subtree:
+    - name: system
+      attributes:
+        technology: 45nm
+      local:
+        - name: DRAM
+          class: DRAM
+          attributes:
+            type: LPDDR4
+            width: 128
+            metadata_storage_width: 128
+            datawidth: 8
+            cluster-size: 1
+            read_bandwidth: 64
+            write_bandwidth: 64
+            read_energy: 100.0
+            write_energy: 100.0
+      subtree:
+        - name: SM
+          local:
+            - name: SMEM
+              class: storage
+              subclass: SRAM_MD
+              attributes:
+                data_storage_depth: 16384
+                data_storage_width: 1024
+                n_banks: 4
+                n_rdwr_ports: 4
+                metadata_storage_depth: 32768
+                metadata_storage_width: 128
+                datawidth: 8
+                cluster-size: 1
+                read_bandwidth: 84
+                write_bandwidth: 84
+                read_energy: 10.0
+                write_energy: 10.0
+                metadata_read_energy: 5.0
+                metadata_write_energy: 5.0
+          subtree:
+            - name: Subpartition[0..3]
+              local:
+                - name: RF
+                  class: storage
+                  subclass: SRAM_MD
+                  attributes:
+                    data_storage_depth: 8192
+                    data_storage_width: 16
+                    n_banks: 32
+                    n_rdwr_ports: 4
+                    metadata_storage_depth: 8192
+                    metadata_storage_width: 16
+                    datawidth: 8
+                    cluster-size: 1
+                    meshY: 2
+                    meshX: 2
+                    instances: 4
+                    read_energy: 2.0
+                    write_energy: 2.0
+                    metadata_read_energy: 1.0
+                    metadata_write_energy: 1.0
+              subtree:
+                - name: PE[0..255]
+                  local:
+                    - name: LRF
+                      class: storage
+                      subclass: SRAM_MD
+                      attributes:
+                        data_storage_depth: 4
+                        data_storage_width: 16
+                        metadata_storage_depth: 4
+                        metadata_storage_width: 16
+                        datawidth: 8
+                        cluster-size: 1
+                        meshY: 16
+                        meshX: 16
+                        instances: 256
+                        read_energy: 0.5
+                        write_energy: 0.5
+                        metadata_read_energy: 0.25
+                        metadata_write_energy: 0.25
+                    - name: MAC
+                      class: compute
+                      subclass: Imac
+                      attributes:
+                        datawidth: 8
+                        meshY: 16
+                        meshX: 16
+                        instances: 256
+                        skip_zero: true
+                        gating: true
+                        energy_per_op: 1.0
+                        zero_gating_energy: 0.1
+                        metadata_energy: 0.2
