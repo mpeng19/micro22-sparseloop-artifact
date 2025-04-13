@@ -65,10 +65,10 @@ ERT:
       energy: 0.00081
     - name: metadata_read
       arguments: null
-      energy: 0
+      energy: 1.0
     - name: metadata_write
       arguments: null
-      energy: 0
+      energy: 1.0
     - name: gated_metadata_read
       arguments: null
       energy: 0
@@ -91,10 +91,10 @@ ERT:
       energy: 0.26703
     - name: metadata_read
       arguments: null
-      energy: 0
+      energy: 5.0
     - name: metadata_write
       arguments: null
-      energy: 0
+      energy: 5.0
     - name: gated_metadata_read
       arguments: null
       energy: 0

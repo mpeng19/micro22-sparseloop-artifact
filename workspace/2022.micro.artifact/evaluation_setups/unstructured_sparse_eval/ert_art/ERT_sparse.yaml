@@ -1,0 +1,103 @@
+ERT:
+  version: 0.3
+  tables:
+    - name: system.DRAM
+      actions:
+        - name: read
+          arguments: null
+          energy: 100.0
+        - name: write
+          arguments: null
+          energy: 100.0
+        - name: idle
+          arguments: null
+          energy: 0
+    - name: system.SM.Subpartition[0..3].PE[0..255].LRF
+      actions:
+        - name: write
+          arguments: null
+          energy: 0.5
+        - name: read
+          arguments: null
+          energy: 0.5
+        - name: gated_write
+          arguments: null
+          energy: 0.1
+        - name: gated_read
+          arguments: null
+          energy: 0.1
+        - name: metadata_read
+          arguments: null
+          energy: 0.25
+        - name: metadata_write
+          arguments: null
+          energy: 0.25
+        - name: gated_metadata_read
+          arguments: null
+          energy: 0
+        - name: gated_metadata_write
+          arguments: null
+          energy: 0
+    - name: system.SM.Subpartition[0..3].PE[0..255].MAC
+      actions:
+        - name: mac_random
+          arguments: null
+          energy: 1.0
+        - name: mac_gated
+          arguments: null
+          energy: 0.1
+        - name: mac_skipped
+          arguments: null
+          energy: 0.0
+    - name: system.SM.Subpartition[0..3].RF
+      actions:
+        - name: write
+          arguments: null
+          energy: 2.0
+        - name: read
+          arguments: null
+          energy: 2.0
+        - name: gated_write
+          arguments: null
+          energy: 0.5
+        - name: gated_read
+          arguments: null
+          energy: 0.5
+        - name: metadata_read
+          arguments: null
+          energy: 1.0
+        - name: metadata_write
+          arguments: null
+          energy: 1.0
+        - name: gated_metadata_read
+          arguments: null
+          energy: 0
+        - name: gated_metadata_write
+          arguments: null
+          energy: 0
+    - name: system.SM.SMEM
+      actions:
+        - name: write
+          arguments: null
+          energy: 10.0
+        - name: read
+          arguments: null
+          energy: 10.0
+        - name: gated_write
+          arguments: null
+          energy: 2.0
+        - name: gated_read
+          arguments: null
+          energy: 2.0
+        - name: metadata_read
+          arguments: null
+          energy: 5.0
+        - name: metadata_write
+          arguments: null
+          energy: 5.0
+        - name: gated_metadata_read
+          arguments: null
+          energy: 0
+        - name: gated_metadata_write
+          arguments: null
+          energy: 0 

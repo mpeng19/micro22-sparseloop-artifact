@@ -1,12 +1,12 @@
 sparse_optimizations:
   version: 0.1
-  name: unstructured_sparse_optimizations
+  name: structured_2_4_sparse_optimizations
   representation:
-    weights: CSR
+    weights: structured_2_4
     activations: uncompressed
   skipping: true
   gating: true
   metadata_cost: false
   zero_cost: false
   skip_threshold: 0
-  gating_threshold: 0
+  gating_threshold: 0 

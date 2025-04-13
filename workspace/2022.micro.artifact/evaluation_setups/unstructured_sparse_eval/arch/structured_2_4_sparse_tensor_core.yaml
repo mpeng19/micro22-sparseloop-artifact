@@ -1,6 +1,6 @@
 architecture:
   version: 0.3
-  name: ideal_sparse_tensor_core
+  name: structured_2_4_sparse_tensor_core
   subtree:
     - name: system
       attributes:
@@ -16,8 +16,8 @@ architecture:
             cluster-size: 1
             read_bandwidth: 64
             write_bandwidth: 64
-            read_energy: 512
-            write_energy: 512
+            read_energy: 100.0
+            write_energy: 100.0
       subtree:
         - name: SM
           local:
@@ -35,10 +35,10 @@ architecture:
                 cluster-size: 1
                 read_bandwidth: 84
                 write_bandwidth: 84
-                read_energy: 536.05005
-                write_energy: 599.806
-                metadata_read_energy: 0.0
-                metadata_write_energy: 0.0
+                read_energy: 10.0
+                write_energy: 10.0
+                metadata_read_energy: 5.0
+                metadata_write_energy: 5.0
           subtree:
             - name: Subpartition[0..3]
               local:
@@ -57,10 +57,10 @@ architecture:
                     meshY: 2
                     meshX: 2
                     instances: 4
-                    read_energy: 3.1647
-                    write_energy: 3.20183
-                    metadata_read_energy: 0.0
-                    metadata_write_energy: 0.0
+                    read_energy: 2.0
+                    write_energy: 2.0
+                    metadata_read_energy: 1.0
+                    metadata_write_energy: 1.0
               subtree:
                 - name: PE[0..255]
                   local:
@@ -77,10 +77,10 @@ architecture:
                         meshY: 16
                         meshX: 16
                         instances: 256
-                        read_energy: 0.02435
-                        write_energy: 0.02435
-                        metadata_read_energy: 0.0
-                        metadata_write_energy: 0.0
+                        read_energy: 0.5
+                        write_energy: 0.5
+                        metadata_read_energy: 0.25
+                        metadata_write_energy: 0.25
                     - name: MAC
                       class: compute
                       subclass: Imac
@@ -91,6 +91,6 @@ architecture:
                         instances: 256
                         skip_zero: true
                         gating: true
-                        energy_per_op: 0.44688
-                        zero_gating_energy: 0.0
-                        metadata_energy: 0.0
+                        energy_per_op: 1.0
+                        zero_gating_energy: 0.1
+                        metadata_energy: 0.2 
