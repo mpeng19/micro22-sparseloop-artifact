@@ -11,7 +11,7 @@ problem:
     S: 7
     Wdilation: 1
     Wstride: 2
-    densities:
+    density:
       Inputs: 0.999
       Weights: 0.5  # 50% structured 2:4 sparsity
       Outputs: 0.999
@@ -61,4 +61,4 @@ problem:
     - N
     - P
     - Q
-    name: CNN-Layer 
+    name: CNN-Layer

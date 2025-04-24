@@ -11,19 +11,24 @@ def parse_stats(stats_file):
         content = f.read()
         
         # Extract cycles
-        cycles_match = re.search(r'Cycles\s+:\s+(\d+)', content)
+        cycles_match = re.search(r'Cycles:\s+(\d+)', content)
         if cycles_match:
             stats['cycles'] = int(cycles_match.group(1))
         
-        # Extract energy
-        energy_match = re.search(r'Energy \(total\)\s+:\s+([\d.]+)', content)
-        if energy_match:
-            stats['energy'] = float(energy_match.group(1))
+        # Extract energy from Summary Stats (convert uJ to pJ)
+        # Look for "Energy: <value> uJ" in the Summary Stats section
+        summary_energy_match = re.search(r'^Energy:\s+([\d.]+)\s+uJ', content, re.MULTILINE)
+        if summary_energy_match:
+            stats['energy'] = float(summary_energy_match.group(1)) * 1_000_000 # Convert uJ to pJ
+        else:
+            # Fallback or error handling if the summary energy isn't found
+            print(f"Warning: Could not find 'Energy: ... uJ' in summary of {stats_file}")
+            stats['energy'] = 0 # Or handle as an error
         
-        # Extract utilization
-        util_match = re.search(r'Utilized instances \(average\)\s+:\s+([\d.]+)', content)
+        # Extract utilization from Summary Stats
+        util_match = re.search(r'^Utilization:\s+([\d.]+)', content, re.MULTILINE)
         if util_match:
-            stats['utilization'] = float(util_match.group(1))
+            stats['utilization'] = float(util_match.group(1)) * 100 # Assuming the value is fraction, convert to %
     
     return stats
 

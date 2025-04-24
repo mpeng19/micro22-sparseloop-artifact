@@ -32,6 +32,8 @@ problem:
       - - - M
       - - - R
       - - - S
+      # format: CSR
+      metadata-word-bits: 32
     - name: Inputs
       projection:
       - - - N

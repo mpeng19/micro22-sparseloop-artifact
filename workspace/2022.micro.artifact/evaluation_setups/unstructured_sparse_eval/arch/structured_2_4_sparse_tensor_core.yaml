@@ -35,10 +35,15 @@ architecture:
                 cluster-size: 1
                 read_bandwidth: 84
                 write_bandwidth: 84
-                read_energy: 10.0
-                write_energy: 10.0
-                metadata_read_energy: 5.0
-                metadata_write_energy: 5.0
+              actions:
+                - name: read
+                - name: write
+                - name: gated_read
+                - name: gated_write
+                - name: metadata_read
+                - name: metadata_write
+                - name: gated_metadata_read
+                - name: gated_metadata_write
           subtree:
             - name: Subpartition[0..3]
               local:
@@ -57,10 +62,15 @@ architecture:
                     meshY: 2
                     meshX: 2
                     instances: 4
-                    read_energy: 2.0
-                    write_energy: 2.0
-                    metadata_read_energy: 1.0
-                    metadata_write_energy: 1.0
+                  actions:
+                    - name: read
+                    - name: write
+                    - name: gated_read
+                    - name: gated_write
+                    - name: metadata_read
+                    - name: metadata_write
+                    - name: gated_metadata_read
+                    - name: gated_metadata_write
               subtree:
                 - name: PE[0..255]
                   local:
@@ -77,10 +87,15 @@ architecture:
                         meshY: 16
                         meshX: 16
                         instances: 256
-                        read_energy: 0.5
-                        write_energy: 0.5
-                        metadata_read_energy: 0.25
-                        metadata_write_energy: 0.25
+                      actions:
+                        - name: read
+                        - name: write
+                        - name: gated_read
+                        - name: gated_write
+                        - name: metadata_read
+                        - name: metadata_write
+                        - name: gated_metadata_read
+                        - name: gated_metadata_write
                     - name: MAC
                       class: compute
                       subclass: Imac
@@ -91,6 +106,7 @@ architecture:
                         instances: 256
                         skip_zero: true
                         gating: true
-                        energy_per_op: 1.0
-                        zero_gating_energy: 0.1
-                        metadata_energy: 0.2 
+                      actions:
+                        - name: compute
+                        - name: mac_gated
+                        - name: mac_skipped 

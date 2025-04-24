@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define workloads
-WORKLOADS=("resnet50_conv1" "alexnet_conv1_sparse" "mobilenet_conv1_sparse")
+WORKLOADS=("resnet50_conv1" "alexnet_conv1" "mobilenet_conv1")
 
 # Get the absolute path to the script directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

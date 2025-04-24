@@ -20,6 +20,7 @@ problem:
           - [ [G] ]
           - [ [R] ]
           - [ [S] ]
+        metadata-word-bits: 32
       - name: Inputs
         projection:
           - [ [N] ]

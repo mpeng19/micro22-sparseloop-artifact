@@ -4,7 +4,7 @@
 set -x
 
 # Define workloads
-WORKLOADS=("resnet50_conv1" "alexnet_conv1_sparse" "mobilenet_conv1_sparse")
+WORKLOADS=("resnet50_conv1" "alexnet_conv1" "mobilenet_conv1")
 
 # Get the absolute path to the script directory
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -44,7 +44,7 @@ for workload in "${WORKLOADS[@]}"; do
     timeloop-mapper \
         "${BASE_DIR}/arch/ideal_sparse_tensor_core.yaml" \
         "${BASE_DIR}/dataflow/weight_stationary.yaml" \
-        "${BASE_DIR}/sparse-opt/ideal.yaml" \
+        "${BASE_DIR}/sparse-opt/unstructured.yaml" \
         "${BASE_DIR}/workload/${workload}.yaml" \
         "${BASE_DIR}/mapper/mapper.yaml" \
         "${BASE_DIR}/ert_art/ERT_ideal.yaml" \
