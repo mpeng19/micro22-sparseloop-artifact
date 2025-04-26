@@ -5,6 +5,7 @@ mapper:
   optimization_metrics:
     - energy
     - cycles
+  sparse_optimizations: ../sparse-opt/structured_2_4.yaml
   constraints:
     - type: bypass
       target: DRAM

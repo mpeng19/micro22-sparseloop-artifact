@@ -1,0 +1,143 @@
+\
+compound_components:
+  version: 0.3
+  classes:
+  - name: SRAM_Structured_2_4 # Custom SRAM - Attempt 2 (Separate Actions)
+    attributes:
+      technology: must_specify
+      data_storage_width: must_specify
+      data_storage_depth: must_specify
+      datawidth: must_specify # e.g., 8
+      n_banks: must_specify
+      n_rdwr_ports: 2 # Default
+      block_size: 4 # Fixed block size for 2:4 format
+      metadata_bits_per_element: 1 # ASSUMPTION
+      # --- Calculated Metadata Storage Attributes --- 
+      # Metadata storage width: number of metadata bits per data word width
+      metadata_storage_width: data_storage_width / datawidth * metadata_bits_per_element 
+      # Metadata storage depth: same as data storage depth
+      metadata_storage_depth: data_storage_depth
+      # Metadata datawidth: how many metadata bits accessed per cycle (aligned with element)
+      metadata_datawidth: metadata_bits_per_element
+
+    subcomponents:
+      # Data Storage
+      - name: storage
+        class: SRAM
+        attributes:
+          technology: technology
+          width: data_storage_width
+          depth: data_storage_depth
+          datawidth: datawidth
+          n_banks: n_banks
+          n_rdwr_ports: n_rdwr_ports
+      # Metadata Storage (Defined as a separate SRAM)
+      - name: metadata_storage 
+        class: SRAM 
+        attributes:
+           technology: technology
+           width: metadata_storage_width
+           depth: metadata_storage_depth
+           datawidth: metadata_datawidth # Access metadata bit(s) for one element at a time
+           n_banks: n_banks # Assume same banking for simplicity
+           n_rdwr_ports: n_rdwr_ports # Assume same ports
+
+    actions:
+      # Read action: Accesses ONLY data storage
+      - name: read
+        arguments:
+          data_delta: 1 
+          address_delta: 1
+        subcomponents:
+          - name: storage
+            actions:
+              - name: read 
+
+      # Write action: Accesses ONLY data storage
+      - name: write
+        arguments:
+          data_delta: 1
+          address_delta: 1
+        subcomponents:
+          - name: storage
+            actions:
+              - name: write 
+
+      # Gated read (sparse): Access metadata, data storage idle
+      - name: gated_read 
+        arguments:
+          data_delta: 0 # Data access is skipped
+          address_delta: 1
+        subcomponents:
+          - name: storage
+            actions:
+              - name: idle # Data port is idle if gated
+          - name: metadata_storage # Metadata is still accessed
+            actions:
+              - name: read 
+
+      # Gated write (sparse): Access metadata, data storage idle
+      - name: gated_write
+        arguments:
+          data_delta: 0
+          address_delta: 1
+        subcomponents:
+          - name: storage
+            actions:
+              - name: idle
+          - name: metadata_storage # Metadata is still accessed/written
+            actions:
+              - name: write
+
+      # Metadata Read action: Accesses ONLY metadata storage
+      - name: metadata_read
+        arguments:
+          data_delta: 0
+          address_delta: 1
+        subcomponents:
+          - name: metadata_storage
+            actions:
+              - name: read
+
+      # Metadata Write action: Accesses ONLY metadata storage
+      - name: metadata_write
+        arguments:
+          data_delta: 0
+          address_delta: 1
+        subcomponents:
+          - name: metadata_storage
+            actions:
+              - name: write
+
+      # Gated Metadata Read: Metadata storage idle
+      - name: gated_metadata_read
+        arguments:
+          data_delta: 0
+          address_delta: 1
+        subcomponents:
+          - name: metadata_storag
+            actions:
+              - name: idle
+              
+      # Gated Metadata Write: Metadata storage idle
+      - name: gated_metadata_write
+        arguments:
+          data_delta: 0
+          address_delta: 1
+        subcomponents:
+          - name: metadata_storage
+            actions:
+              - name: idle
+      
+      - name: idle
+        subcomponents:
+          - name: storage
+            actions:
+              - name: idle
+          - name: metadata_storage
+            actions:
+              - name: idle
+
+# Ensure primitive SRAM definition is available if not imported
+# primitive_components: ...
+

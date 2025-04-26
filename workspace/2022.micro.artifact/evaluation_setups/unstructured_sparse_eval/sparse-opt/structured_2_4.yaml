@@ -1,12 +1,48 @@
+# Modeling structured sparsity using implicit format + targeted actions
+# + testing explicit representation-format reporting
 sparse_optimizations:
-  version: 0.1
-  name: structured_2_4_sparse_optimizations
-  representation:
-    weights: structured_2_4
-    activations: uncompressed
-  skipping: true
-  gating: true
-  metadata_cost: false
-  zero_cost: false
-  skip_threshold: 0
-  gating_threshold: 0 
+  targets:
+
+    # --- Representation Format ---
+    # Test adding explicit UOP format definition using correct keyword
+    - name: DRAM
+      representation-format:
+        data-spaces:
+          # Explicitly define all data spaces as Uncompressed (UOP)
+          - name: Weights 
+            ranks:
+              - format: UOP 
+                flattened-rankIDs: [ [R, S, C, M] ] 
+          - name: Inputs 
+            ranks:
+              - format: UOP 
+                flattened-rankIDs: [ [N, C, R, S, P, Q] ] 
+          - name: Outputs 
+            ranks:
+              - format: UOP 
+                flattened-rankIDs: [ [N, M, P, Q] ] 
+
+    # --- Action Optimizations ---
+    # Define skipping and gating at the components where they apply.
+    - name: LRF # Target buffer before MAC
+      action-optimization:
+        - type: gating
+          options:
+            # Gate fetching Weights based on corresponding Input value
+            - target: Weights
+              condition-on: [ Inputs ]
+            # Depending on PE architecture, might also gate Inputs based on Weights
+            # - target: Inputs
+            #   condition-on: [ Weights ]
+        - type: skipping
+          options:
+            # Skip fetching Inputs based on corresponding Weight value
+            - target: Inputs
+              condition-on: [ Weights ]
+            # Skipping Weights based on Inputs might also be possible
+            # - target: Weights
+            #   condition-on: [ Inputs ]
+
+# Global flags (metadata_cost, skipping, gating) are generally not used
+# when the targets structure is employed. Costs should be inferred from ERT
+# and actions triggered by the optimizations defined above. 
