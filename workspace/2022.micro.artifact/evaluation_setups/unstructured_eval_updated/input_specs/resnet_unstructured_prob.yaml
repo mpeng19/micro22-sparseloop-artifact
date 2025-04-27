@@ -1,0 +1,52 @@
+M512-K256-N1024-IAD0.82-WD0.5:
+  instance:
+    M: 512
+    K: 256
+    N: 1024
+    densities:
+      Inputs:
+        density: 0.8179340362548828
+        distribution: fixed-structured
+      Outputs:
+        density: 0.4449729919433594
+        distribution: fixed-structured
+      Weights: 0.5
+M512-K128-N1024-IAD0.56-WD0.5:
+  instance:
+    M: 512
+    K: 128
+    N: 1024
+    densities:
+      Inputs:
+        density: 0.5566940307617188
+        distribution: fixed-structured
+      Outputs:
+        density: 0.5072307586669922
+        distribution: fixed-structured
+      Weights: 0.5
+M128-K1152-N1024-IAD0.44-WD0.5:
+  instance:
+    M: 128
+    K: 1152
+    N: 1024
+    densities:
+      Inputs:
+        density: 0.4437408447265625
+        distribution: fixed-structured
+      Outputs:
+        density: 0.37786102294921875
+        distribution: fixed-structured
+      Weights: 0.5
+M512-K1024-N256-IAD0.27-WD0.5:
+  instance:
+    M: 512
+    K: 1024
+    N: 256
+    densities:
+      Inputs:
+        density: 0.2667732238769531
+        distribution: fixed-structured
+      Outputs:
+        density: 0.38934326171875
+        distribution: fixed-structured
+      Weights: 0.5 
