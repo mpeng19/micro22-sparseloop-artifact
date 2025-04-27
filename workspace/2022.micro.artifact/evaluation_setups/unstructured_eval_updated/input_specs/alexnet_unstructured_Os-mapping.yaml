@@ -1,0 +1,59 @@
+mapping:  
+
+#
+# DRAM
+#
+- target: DRAM
+  type: temporal
+  permutation: KNM
+  factors: K=3 N=6 M=121 # Adjusted M factor (was 55)
+
+#
+# GLB
+#
+
+- target: GLB
+  type: temporal
+  factors: K=1 N=1 M=1 
+  permutation: KNM
+
+- target: GLB
+  type: bypass
+  bypass: [ Outputs ] 
+  keep: [ Inputs, Weights ] 
+
+#
+# Buffer
+#
+
+- target: Buffer
+  type: temporal
+  factors: K=121 N=1 M=1 # Adjusted factors
+  permutation: NMK
+
+- target: Buffer
+  type: bypass
+  keep: [ Outputs ] 
+  bypass: [ Inputs, Weights ] 
+
+
+#
+# LineBuffer
+#
+
+- target: LineBuffer
+  type: bypass
+  keep: [ Inputs, Weights ] 
+  bypass: [  Outputs ] 
+
+- target: LineBuffer
+  type: temporal
+  factors: K=1 N=2 M=5 # Adjusted Temporal M factor (was 11)
+  permutation: NMK
+
+- target: LineBuffer
+  type: spatial
+  no_link_transfer: [ Inputs, Weights, Outputs]
+  factors: K=1 N=8 M=5 # Spatial M factor remains 5
+  permutation: NKM
+  split: 1 
