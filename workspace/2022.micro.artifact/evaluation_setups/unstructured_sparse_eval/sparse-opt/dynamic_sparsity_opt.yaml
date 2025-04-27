@@ -1,0 +1,51 @@
+sparse_optimizations:
+  version: 0.3 # Use a version that supports targets
+  name: dynamic_sparsity_optimizations
+
+  # We won't define a global representation format here.
+  # The structure (e.g., "2:4", "4:16") should be specified in the workload.
+  # Timeloop/Accelergy will use the actions defined in the architecture and ERT
+  # based on the workload's sparsity characteristics.
+
+  targets:
+    # --- Action Optimizations ---
+    # Define where gating and skipping occur based on data sparsity.
+    # This is a general configuration; the specific format (2:4, 4:16 etc.)
+    # from the workload file will determine *which* data elements are zero/skipped.
+
+    # Example: Gating/Skipping at the PE's Local Register File (LRF)
+    # This is the storage level immediately preceding the MAC.
+    - name: LRF
+      action-optimization:
+        # Gate reads based on the value of the *other* operand fetched concurrently.
+        - type: gating
+          options:
+            - target: Weights
+              condition-on: [ Inputs ] # Don't read Weights if corresponding Input is zero
+            - target: Inputs
+              condition-on: [ Weights ] # Don't read Inputs if corresponding Weight is zero
+        # Skip reads based on the value of the *other* operand.
+        # Skipping might imply data is not even sent, potentially saving interconnect energy.
+        # Gating might imply data arrives but is ignored, saving buffer energy.
+        # The exact energy is defined in the ERT for gated_read/write vs read/write.
+        - type: skipping
+          options:
+            - target: Weights
+              condition-on: [ Inputs ]
+            - target: Inputs
+              condition-on: [ Weights ]
+
+  # --- Global Settings (can be overridden by target-specific settings) ---
+  # These might not be strictly necessary if using the 'targets' approach extensively,
+  # but can provide defaults.
+  # compute_representation: true # Attempt to model compute based on representation (can be complex)
+  metadata_word_overhead: 0 # Assume overhead is captured in metadata action costs in ERT
+  metadata_format: "bitmask" # Default assumption, adjust if needed
+  # zero_cost: false # Set to true ONLY if zero values truly have zero energy cost everywhere (unlikely)
+  # metadata_cost: true # Set to true if metadata access has cost (handled by ERT actions)
+  skip_compute_on_zero: true # Enable skipping compute operations
+  gate_storage_on_zero: true # Enable gating memory accesses
+  
+  # Thresholds are typically 0 for exact sparsity handling
+  skip_threshold: 0 
+  gating_threshold: 0 

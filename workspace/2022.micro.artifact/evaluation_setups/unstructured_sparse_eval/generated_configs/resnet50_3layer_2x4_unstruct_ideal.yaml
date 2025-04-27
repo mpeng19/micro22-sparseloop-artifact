@@ -1,0 +1,11 @@
+model_name: resnet50_3layer_2x4_unstruct_ideal
+layers:
+- name: resnet50_conv1
+  workload: resnet/resnet50_conv1_2x4.yaml
+  sparsity_arch: structured_2_4_sparse_tensor_core.yaml
+- name: resnet50_conv2_block1_1
+  workload: resnet/resnet50_conv2_block1_1_unstructured.yaml
+  sparsity_arch: unstructured_sparse_tensor_core.yaml
+- name: resnet50_conv2_block1_2
+  workload: resnet/resnet50_conv2_block1_2_ideal.yaml
+  sparsity_arch: ideal_sparse_tensor_core.yaml

@@ -1,0 +1,18 @@
+model_name: resnet50_mixed_sparsity_example
+layers:
+  - name: resnet50_conv1
+    workload: workload_shapes/resnet50_conv1.yaml
+    sparsity_arch: structured_2_4_sparse_tensor_core.yaml # Example: Use 2:4 sparsity
+
+  - name: resnet50_conv2_block1_1
+    workload: workload_shapes/resnet50_conv2_block1_1.yaml
+    sparsity_arch: unstructured_sparse_tensor_core.yaml # Example: Use unstructured
+
+  - name: resnet50_conv2_block1_2
+    workload: workload_shapes/resnet50_conv2_block1_2.yaml
+    sparsity_arch: ideal_sparse_tensor_core.yaml       # Example: Use ideal
+
+  # Add more layers from the model as needed...
+  # - name: layer_name_xyz
+  #   workload: workload_shapes/layer_name_xyz.yaml
+  #   sparsity_arch: structured_2_4_sparse_tensor_core.yaml # Or another arch file 

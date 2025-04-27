@@ -1,0 +1,20 @@
+ART:
+  version: 0.3
+  # Area Table for the neuroncore_v3_like architecture
+  # Values are copied from the existing ART.yaml as placeholders.
+  # Replace with actual area estimates if available.
+  tables:
+  - name: system.DRAM
+    area: 0 # Typically area for DRAM is accounted for separately or considered off-chip.
+
+  - name: system.SM.SMEM
+    area: 3617260.0 # Placeholder from existing ART.yaml
+
+  - name: system.SM.Subpartition[0..3].RF
+    area: 48735.6 # Placeholder from existing ART.yaml
+
+  - name: system.SM.Subpartition[0..3].PE[0..255].LRF
+    area: 20.0 # Placeholder from existing ART.yaml
+
+  - name: system.SM.Subpartition[0..3].PE[0..255].MAC
+    area: 687.74999 # Placeholder from existing ART.yaml 

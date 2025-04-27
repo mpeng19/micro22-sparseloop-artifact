@@ -1,0 +1,99 @@
+ERT:
+  version: 0.3
+  # Energy Reference Table for the neuroncore_v3_like architecture
+  # WARNING: Energy values for sparse actions (gated*, metadata*, mac_gated, mac_skipped)
+  # are placeholders based on assumptions or values from the provided ERT.yaml.
+  # Replace these with accurate characterization data for the target hardware.
+  tables:
+  # --- DRAM --- 
+  - name: system.DRAM
+    actions:
+      - name: read
+        energy: 512 # Placeholder from ERT.yaml
+      - name: write
+        energy: 512 # Placeholder from ERT.yaml
+      - name: idle
+        energy: 0 # Assume idle is free
+
+  # --- Shared Memory (SMEM) --- Assuming SRAM_MD subclass
+  - name: system.SM.SMEM
+    actions:
+      - name: read
+        energy: 536.05005 # Placeholder from ERT.yaml
+      - name: write
+        energy: 599.806 # Placeholder from ERT.yaml
+      - name: gated_read
+        # Placeholder: Assume very low energy for gated access (clock gating)
+        energy: 0.1 # Placeholder - adjust based on tech/design
+      - name: gated_write
+        energy: 0.1 # Placeholder
+      - name: metadata_read
+        # Placeholder: Assume metadata access cost is lower than data (e.g., fewer bits)
+        energy: 5.0 # Placeholder from ERT.yaml (adjust as needed)
+      - name: metadata_write
+        energy: 5.0 # Placeholder from ERT.yaml (adjust as needed)
+      - name: gated_metadata_read
+        energy: 0.05 # Placeholder - even lower if gated
+      - name: gated_metadata_write
+        energy: 0.05 # Placeholder
+      - name: idle
+        energy: 0
+
+  # --- Register File (RF) --- Assuming SRAM_MD subclass
+  - name: system.SM.Subpartition[0..3].RF
+    actions:
+      - name: read
+        energy: 3.1647 # Placeholder from ERT.yaml
+      - name: write
+        energy: 3.20183 # Placeholder from ERT.yaml
+      - name: gated_read
+        energy: 0.01 # Placeholder
+      - name: gated_write
+        energy: 0.01 # Placeholder
+      - name: metadata_read
+        energy: 1.0 # Placeholder from ERT.yaml
+      - name: metadata_write
+        energy: 1.0 # Placeholder from ERT.yaml
+      - name: gated_metadata_read
+        energy: 0.005 # Placeholder
+      - name: gated_metadata_write
+        energy: 0.005 # Placeholder
+      - name: idle
+        energy: 0
+
+  # --- PE Local Register File (LRF) --- Assuming SRAM_MD subclass
+  - name: system.SM.Subpartition[0..3].PE[0..255].LRF
+    actions:
+      - name: read
+        energy: 0.02435 # Placeholder from ERT.yaml
+      - name: write
+        energy: 0.02435 # Placeholder from ERT.yaml
+      - name: gated_read
+        energy: 0.001 # Placeholder
+      - name: gated_write
+        energy: 0.001 # Placeholder
+      - name: metadata_read
+        energy: 0.01 # Placeholder - smaller than RF metadata?
+      - name: metadata_write
+        energy: 0.01 # Placeholder
+      - name: gated_metadata_read
+        energy: 0.0005 # Placeholder
+      - name: gated_metadata_write
+        energy: 0.0005 # Placeholder
+      - name: idle
+        energy: 0
+
+  # --- MAC unit --- Assuming Imac subclass with sparse support
+  - name: system.SM.Subpartition[0..3].PE[0..255].MAC
+    actions:
+      - name: compute # Represents a dense MAC operation
+        # Using mac_random cost from ERT.yaml as placeholder for dense compute
+        energy: 0.44688 # Placeholder from ERT.yaml
+      - name: mac_gated # Represents a MAC cycle where computation is clock-gated due to zero input
+        # Placeholder: Assume very low energy for gating
+        energy: 0.0 # Placeholder - often modeled as near-zero
+      - name: mac_skipped # Represents a MAC cycle skipped entirely (if possible)
+        # Placeholder: Assume zero energy if skipped
+        energy: 0.0 # Placeholder
+      - name: idle
+        energy: 0 

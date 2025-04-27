@@ -1,0 +1,11 @@
+model_name: resnet50_3layer_all_2x4_on_2x4arch
+layers:
+- name: resnet50_conv1
+  workload: resnet/resnet50_conv1_2x4.yaml
+  sparsity_arch: structured_2_4_sparse_tensor_core.yaml
+- name: resnet50_conv2_block1_1
+  workload: resnet/resnet50_conv2_block1_1_2x4.yaml
+  sparsity_arch: structured_2_4_sparse_tensor_core.yaml
+- name: resnet50_conv2_block1_2
+  workload: resnet/resnet50_conv2_block1_2_2x4.yaml
+  sparsity_arch: structured_2_4_sparse_tensor_core.yaml

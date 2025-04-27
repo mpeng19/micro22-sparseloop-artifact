@@ -1,0 +1,5 @@
+model_name: resnet50_conv1_only_2x4
+layers:
+- name: resnet50_conv1
+  workload: resnet/resnet50_conv1_2x4.yaml
+  sparsity_arch: structured_2_4_sparse_tensor_core.yaml

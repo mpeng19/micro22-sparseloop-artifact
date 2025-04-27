@@ -1,0 +1,64 @@
+problem:
+  instance:
+    C: 64  # Input channels from conv2_block1_1
+    Hdilation: 1
+    Hstride: 1  # Stride 1
+    M: 64  # Output channels (K)
+    N: 1   # Batch size
+    P: 56  # Output height
+    Q: 56  # Output width
+    R: 3   # Filter height 3x3 conv
+    S: 3   # Filter width 3x3 conv
+    Wdilation: 1
+    Wstride: 1  # Stride 1
+    densities:
+      Inputs: 0.999 # Assuming dense inputs
+      Weights: 0.5 # Maintain 2:4 sparsity density
+      Outputs: 0.999 # Assuming dense outputs (can be refined)
+    structure:
+      Weights: "2:4" # Maintain 2:4 structure
+  shape:
+    coefficients:
+    - default: 1
+      name: Wstride
+    - default: 1
+      name: Hstride
+    - default: 1
+      name: Wdilation
+    - default: 1
+      name: Hdilation
+    data-spaces:
+    - name: Weights
+      projection:
+      - - - C
+      - - - M
+      - - - R
+      - - - S
+    - name: Inputs
+      projection:
+      - - - N
+      - - - C
+      - - - R
+          - Wdilation
+        - - P
+          - Wstride
+      - - - S
+          - Hdilation
+        - - Q
+          - Hstride
+    - name: Outputs
+      projection:
+      - - - N
+      - - - M
+      - - - Q
+      - - - P
+      read-write: true
+    dimensions:
+    - C
+    - M
+    - R
+    - S
+    - N
+    - P
+    - Q
+    name: CNN-Layer # Can rename later if needed 

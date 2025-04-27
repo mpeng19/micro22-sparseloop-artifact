@@ -1,0 +1,126 @@
+architecture:
+  version: 0.3
+  # Renamed to reflect the dynamic sparsity capability
+  name: dynamic_sparsity_arch 
+  subtree:
+    - name: system
+      attributes:
+        technology: 45nm # Assuming same technology
+      local:
+        - name: DRAM
+          class: DRAM
+          attributes:
+            type: LPDDR4
+            width: 128
+            # Assuming metadata might be stored off-chip if needed, or handled differently.
+            # Keep width consistent for data.
+            # metadata_storage_width: 128 
+            datawidth: 8
+            cluster-size: 1
+            read_bandwidth: 64
+            write_bandwidth: 64
+            # Add basic actions for Accelergy
+          actions: 
+            - name: read
+            - name: write
+            - name: idle # Often useful for power calculation
+      subtree:
+        - name: SM # Streaming Multiprocessor / Core level
+          local:
+            - name: SMEM # Shared Memory
+              class: storage 
+              # Using SRAM_MD assumes metadata capability is needed here
+              subclass: SRAM_MD 
+              attributes:
+                data_storage_depth: 16384
+                data_storage_width: 1024
+                n_banks: 4
+                n_rdwr_ports: 4
+                metadata_storage_depth: 32768 # Placeholder - adjust based on needs
+                metadata_storage_width: 128  # Placeholder - adjust based on needs
+                datawidth: 8
+                cluster-size: 1
+                read_bandwidth: 84
+                write_bandwidth: 84
+              # Define actions including sparse/metadata related ones
+              actions:
+                - name: read
+                - name: write
+                - name: gated_read
+                - name: gated_write
+                - name: metadata_read
+                - name: metadata_write
+                - name: gated_metadata_read
+                - name: gated_metadata_write
+                - name: idle
+          subtree:
+            - name: Subpartition[0..3] # Example subdivision
+              local:
+                - name: RF # Register File / Intermediate Buffer
+                  class: storage
+                  subclass: SRAM_MD # Assume metadata support needed here too
+                  attributes:
+                    data_storage_depth: 8192
+                    data_storage_width: 16
+                    n_banks: 32
+                    n_rdwr_ports: 4
+                    metadata_storage_depth: 8192 # Placeholder
+                    metadata_storage_width: 16   # Placeholder
+                    datawidth: 8
+                    cluster-size: 1
+                    meshX: 2 # For spatial mapping if needed
+                    meshY: 2 # For spatial mapping if needed
+                    instances: 4 # 2x2 = 4 subpartitions
+                  actions:
+                    - name: read
+                    - name: write
+                    - name: gated_read
+                    - name: gated_write
+                    - name: metadata_read
+                    - name: metadata_write
+                    - name: gated_metadata_read
+                    - name: gated_metadata_write
+                    - name: idle
+              subtree:
+                - name: PE[0..255] # Processing Elements
+                  local:
+                    - name: LRF # Local Register File (within PE)
+                      class: storage
+                      subclass: SRAM_MD # Assume metadata support closest to PE
+                      attributes:
+                        data_storage_depth: 4  # Small buffer
+                        data_storage_width: 16
+                        metadata_storage_depth: 4 # Placeholder
+                        metadata_storage_width: 16 # Placeholder
+                        datawidth: 8
+                        cluster-size: 1
+                        meshX: 16 # For spatial mapping
+                        meshY: 16 # For spatial mapping
+                        instances: 256 # 16x16 = 256 PEs
+                      actions:
+                        - name: read
+                        - name: write
+                        - name: gated_read
+                        - name: gated_write
+                        - name: metadata_read
+                        - name: metadata_write
+                        - name: gated_metadata_read
+                        - name: gated_metadata_write
+                        - name: idle
+                    - name: MAC # Multiply-Accumulate Unit
+                      class: compute
+                      subclass: Imac # Integer MAC
+                      attributes:
+                        datawidth: 8
+                        meshX: 16
+                        meshY: 16
+                        instances: 256
+                        # Explicitly state capabilities for clarity
+                        support_gating: true 
+                        support_skipping: true 
+                      # Define actions corresponding to capabilities
+                      actions:
+                        - name: compute # Dense compute
+                        - name: mac_gated # Gated operation (clock gated due to sparse input)
+                        - name: mac_skipped # Skipped operation (entire cycle skipped)
+                        - name: idle 
