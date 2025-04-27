@@ -1,0 +1,21 @@
+# mapper_structured.yaml
+mapper:
+  type: exhaustive # Original type used
+  search_size: 1000 # Original search size used
+  timeout: 3600
+  optimization_metrics:
+    - energy
+    - cycles
+  constraints:
+    - type: bypass
+      target: DRAM
+      bypass: false
+    - type: bypass
+      target: SMEM
+      bypass: false
+    - type: bypass
+      target: RF
+      bypass: false
+    - type: bypass
+      target: LRF
+      bypass: false 

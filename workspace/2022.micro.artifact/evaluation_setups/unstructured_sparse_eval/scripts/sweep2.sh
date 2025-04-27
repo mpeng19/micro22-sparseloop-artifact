@@ -36,7 +36,7 @@ for workload in "${WORKLOADS[@]}"; do
     ls -la "${BASE_DIR}/dataflow/weight_stationary.yaml"
     ls -la "${BASE_DIR}/sparse-opt/ideal.yaml"
     ls -la "${BASE_DIR}/workload/${workload}.yaml"
-    ls -la "${BASE_DIR}/mapper/mapper.yaml"
+    ls -la "${BASE_DIR}/mapper/mapper_structured.yaml"
     ls -la "${BASE_DIR}/ert_art/ERT_ideal.yaml"
     ls -la "${BASE_DIR}/ert_art/ART.yaml"
     
@@ -46,7 +46,7 @@ for workload in "${WORKLOADS[@]}"; do
         "${BASE_DIR}/dataflow/weight_stationary.yaml" \
         "${BASE_DIR}/sparse-opt/unstructured.yaml" \
         "${BASE_DIR}/workload/${workload}.yaml" \
-        "${BASE_DIR}/mapper/mapper.yaml" \
+        "${BASE_DIR}/mapper/mapper_structured.yaml" \
         "${BASE_DIR}/ert_art/ERT_ideal.yaml" \
         "${BASE_DIR}/ert_art/ART.yaml" \
         -o "${BASE_DIR}/outputs/ideal_${workload}" 

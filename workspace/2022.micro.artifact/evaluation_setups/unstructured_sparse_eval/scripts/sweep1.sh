@@ -20,7 +20,7 @@ for workload in "${WORKLOADS[@]}"; do
         "${BASE_DIR}/dataflow/weight_stationary.yaml" \
         "${BASE_DIR}/sparse-opt/unstructured.yaml" \
         "${BASE_DIR}/workload/${workload}.yaml" \
-        "${BASE_DIR}/mapper/mapper.yaml" \
+        "${BASE_DIR}/mapper/mapper_unstructured.yaml" \
         "${BASE_DIR}/ert_art/ERT.yaml" \
         "${BASE_DIR}/ert_art/ART.yaml" \
         -o "${BASE_DIR}/outputs/unstructured_${workload}" 

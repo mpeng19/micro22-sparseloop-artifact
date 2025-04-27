@@ -18,7 +18,7 @@ ARCH="structured_2_4"
 ARCH_FILE="$ARCH_DIR/${ARCH}_sparse_tensor_core.yaml"
 SPARSE_OPT_FILE="$SPARSE_OPT_DIR/${ARCH}.yaml"
 DATAFLOW_FILE="$DATAFLOW_DIR/weight_stationary.yaml"
-MAPPER_FILE="$MAPPER_DIR/mapper.yaml"
+MAPPER_FILE="$MAPPER_DIR/mapper_structured.yaml"
 ERT_FILE="$ERT_ART_DIR/ERT.yaml" # Using the base ERT file
 ART_FILE="$ERT_ART_DIR/ART.yaml"
 
@@ -69,7 +69,7 @@ for workload in "${EVAL_WORKLOADS[@]}"; do
                   $DATAFLOW_FILE \
                   $SPARSE_OPT_FILE \
                   $WORKLOAD_FILE \
-                  $MAPPER_FILE \
+                  "$MAPPER_DIR/mapper_structured.yaml" \
                   $ERT_FILE \
                   $ART_FILE \
                   -o $OUT_DIR

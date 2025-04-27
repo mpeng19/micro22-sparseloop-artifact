@@ -94,7 +94,7 @@ def main():
     unstructured_stats = {}
     
     # Process unstructured sparse results
-    for workload in ['resnet50_conv1', 'alexnet_conv1_sparse', 'mobilenet_conv1_sparse']:
+    for workload in ['resnet50_conv1', 'alexnet_conv1', 'mobilenet_conv1']:
         stats_file = os.path.join(output_dir, f'unstructured_{workload}', 'timeloop-mapper.stats.txt')
         if os.path.exists(stats_file):
             stats = parse_stats(stats_file)

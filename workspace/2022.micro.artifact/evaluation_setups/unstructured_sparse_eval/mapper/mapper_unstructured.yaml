@@ -1,11 +1,10 @@
 mapper:
-  type: exhaustive
-  search_size: 1000
+  type: hybrid
+  search_size: 50000
   timeout: 3600
   optimization_metrics:
     - energy
     - cycles
-  sparse_optimizations: ../sparse-opt/structured_2_4.yaml
   constraints:
     - type: bypass
       target: DRAM
