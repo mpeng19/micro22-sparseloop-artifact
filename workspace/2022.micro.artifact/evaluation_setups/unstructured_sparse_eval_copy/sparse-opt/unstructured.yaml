@@ -1,0 +1,6 @@
+sparse_optimizations:
+  version: 0.1
+  name: unstructured_sparse_optimizations
+  zero_cost: false
+  skip_threshold: 0
+  gating_threshold: 0

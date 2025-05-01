@@ -1,0 +1,15 @@
+dataflow:
+  type: weight-stationary
+  constraints:
+    - name: FlexibleGH-Ms-constraints
+      description: Flexible dataflow with support for unstructured sparsity
+      constraints:
+        - type: temporal
+          target: Weights
+          factors: [R, S, C, M]
+        - type: spatial
+          target: Inputs
+          factors: [N, P, Q]
+        - type: temporal
+          target: Outputs
+          factors: [N, P, Q] 

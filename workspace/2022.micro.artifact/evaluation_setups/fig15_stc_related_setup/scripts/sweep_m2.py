@@ -596,7 +596,7 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--design_point', type=str, default= "MICRO22-STC-Case-Study", help="design point file to run, any file name in ../arch_templates/HW_systems/design_points/...")
     parser.add_argument('-o', '--output_dir', type=str, default=os.path.join(this_directory, os.pardir, "outputs"), help='top level output directory' )
     parser.add_argument('--layer_idx', type=int, default=None, help='specific layer idex to run')
-    parser.add_argument('--density_degrees', nargs = "*", type=float, default=[0.5], help='weight density degrees to run')
+    parser.add_argument('--density_degrees', nargs = "*", type=float, default=[1.0, 0.5, 0.3333, 0.25], help='weight density degrees to run')
     parser.add_argument('--max_layers', type=int, default=100, help='max number of layers to run')
     parser.add_argument('-v', '--verbose', action="store_true")
     parser.add_argument('--search_mapping', action="store_true", help="explore mappings instead of use the mappings already found")
