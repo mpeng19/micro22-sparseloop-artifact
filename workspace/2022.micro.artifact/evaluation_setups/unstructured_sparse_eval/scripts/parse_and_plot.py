@@ -109,18 +109,19 @@ def plot_comparison(all_stats, workloads, sparsity_types, figures_dir):
     num_sparsity_types = len(sparsity_types)
     x = np.arange(num_workloads)  # the label locations
     width = 0.8 / num_sparsity_types  # the width of the bars
+    colors = ['red', 'blue'] # Define colors for the bars
 
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 6)) # Wider figure
 
     # --- Cycles Plot ---
     ax1.set_ylabel('Cycles')
-    ax1.set_title('Cycles Comparison by Workload and Sparsity Type')
+    ax1.set_title('Cycles Comparison by Workload and Sparsity Type (at 50% Sparsity)')
     ax1.set_xticks(x)
     ax1.set_xticklabels(display_workloads, rotation=45, ha="right") # Use display names
 
     # --- Energy Plot ---
     ax2.set_ylabel('Energy (pJ)')
-    ax2.set_title('Energy Comparison by Workload and Sparsity Type')
+    ax2.set_title('Energy Comparison by Workload and Sparsity Type (at 50% Sparsity)')
     ax2.set_xticks(x)
     ax2.set_xticklabels(display_workloads, rotation=45, ha="right") # Use display names
 
@@ -132,9 +133,9 @@ def plot_comparison(all_stats, workloads, sparsity_types, figures_dir):
         energy = [all_stats.get(s_key, {}).get(w, {}).get('energy', 0) for w in workloads]
 
         offset = width * (i - (num_sparsity_types - 1) / 2)
-        # Use the key directly as the label
-        rects1 = ax1.bar(x + offset, cycles, width, label=s_key.replace('_', ' ').title())
-        rects2 = ax2.bar(x + offset, energy, width, label=s_key.replace('_', ' ').title())
+        # Use the key directly as the label and specify color
+        rects1 = ax1.bar(x + offset, cycles, width, label=s_key.replace('_', ' ').title(), color=colors[i % len(colors)])
+        rects2 = ax2.bar(x + offset, energy, width, label=s_key.replace('_', ' ').title(), color=colors[i % len(colors)])
 
         # Add value labels
         for rect in rects1:
@@ -223,7 +224,7 @@ if __name__ == "__main__":
     # Combine results for plotting function
     all_stats = {
         'Unstructured': unstructured_results,
-        'Structured 2:4': structured_results # Updated key
+        'Structured': structured_results # Updated key to 'Structured'
     }
 
     # --- Updated Create DataFrames ---
@@ -289,7 +290,7 @@ if __name__ == "__main__":
     else:
         print("No data available")
 
-    print("\nStructured 2:4 Architecture:") # Updated title
+    print("\nStructured 2:4 Architecture:") # Updated title - Keep this specific title for the table if desired
     if not structured_df.empty:
         print(structured_df.to_string(index=False))
     else:
