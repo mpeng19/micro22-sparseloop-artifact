@@ -12,9 +12,9 @@ problem:
     Wdilation: 1
     Wstride: 2
     densities:
-      Inputs: 0.999
-      Weights: 0.5  # 50% unstructured sparsity
-      Outputs: 0.999
+      Inputs: 1.0
+      Weights: 1.0
+      Outputs: 0.657259
   shape:
     coefficients:
     - default: 1
@@ -32,8 +32,6 @@ problem:
       - - - M
       - - - R
       - - - S
-      # format: CSR
-      metadata-word-bits: 32
     - name: Inputs
       projection:
       - - - N
@@ -61,4 +59,4 @@ problem:
     - N
     - P
     - Q
-    name: CNN-Layer 
+    name: CNN-Layer

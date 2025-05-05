@@ -4,17 +4,17 @@ problem:
     Hdilation: 1
     Hstride: 4
     M: 96
-    N: 4
-    P: 56
-    Q: 56
+    N: 1
+    P: 55
+    Q: 55
     R: 11
     S: 11
     Wdilation: 1
     Wstride: 4
     densities:
-      Inputs: 0.999
-      Weights: 0.5  # 50% unstructured sparsity
-      Outputs: 0.378
+      Inputs: 1.0
+      Weights: 1.0
+      Outputs: 0.418981
   shape:
     coefficients:
     - default: 1
@@ -32,7 +32,6 @@ problem:
       - - - M
       - - - R
       - - - S
-      metadata-word-bits: 32
     - name: Inputs
       projection:
       - - - N
