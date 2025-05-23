@@ -16,10 +16,10 @@ def parse_stats_file(stats_file):
         with open(stats_file, 'r') as f:
             content = f.read()
 
-            # --- Extract total energy from Summary Stats ---
+            #Extract total energy from Summary Stats
             summary_energy_match = re.search(r'Summary Stats\n-{3,}\n.*?Energy:\s+([\d.]+)\s+uJ', content, re.DOTALL)
             if summary_energy_match:
-                stats['energy'] = float(summary_energy_match.group(1)) * 1_000_000 # Convert uJ to pJ
+                stats['energy'] = float(summary_energy_match.group(1)) * 1_000_000 #uJ to pJ
             else:
                 energy_match = re.search(r'Energy \(total\)\s+:\s+([\d.]+)', content)
                 if energy_match:
@@ -29,7 +29,7 @@ def parse_stats_file(stats_file):
                     print(f"Error: Could not parse total energy from {stats_file}")
                     stats['energy'] = 0
 
-            # Extract cycles (Prefer summary stats)
+            #Extract cycles
             summary_cycles_match = re.search(r'Summary Stats\n-{3,}\n.*?Cycles:\s+(\d+)', content, re.DOTALL)
             if summary_cycles_match:
                 stats['cycles'] = int(summary_cycles_match.group(1))
@@ -42,26 +42,22 @@ def parse_stats_file(stats_file):
                      stats['cycles'] = 0
 
 
-            # Extract utilization (Prefer summary stats: 0.0-1.0 scale)
+            #Extract utilization
             summary_util_match = re.search(r'Summary Stats\n-{3,}\n.*?Utilization:\s+([\d.]+)', content, re.DOTALL)
             if summary_util_match:
-                stats['utilization'] = float(summary_util_match.group(1)) # Keep as 0.0-1.0 here
+                stats['utilization'] = float(summary_util_match.group(1))
             else:
-                 # Fallback to first Utilization if summary missing
                  util_match = re.search(r'Utilization:\s+([\d.]+)', content)
                  if util_match:
                       print(f"Warning: Using fallback utilization parsing for {stats_file}")
-                      # Assume fallback might be percentage already, try converting
                       try:
                          util_val = float(util_match.group(1))
-                         # Crude check if it looks like percentage
                          stats['utilization'] = util_val / 100.0 if util_val > 1.0 else util_val
                       except ValueError:
                          stats['utilization'] = 0.0
                  else:
                      stats['utilization'] = 0.0
 
-            # --- Extract per-level energy, summing across tensors ---
             level_pattern = r'(Level\s+(\d+)\n-{3,}\n=== ([^\n]+) ===.*?)(?=(Level\s+\d+\n-{3,})|\Z)'
             level_matches = re.finditer(level_pattern, content, re.DOTALL)
 
@@ -85,7 +81,6 @@ def parse_stats_file(stats_file):
 
             stats['level_energy'] = level_energy
 
-        # Validation check
         if stats.get('energy', 0) > 0 and not np.isclose(parsed_sum, stats['energy'], rtol=0.1):
              print(f"Warning: Sum of parsed level energies ({parsed_sum:,.2f} pJ) doesn't closely match total summary energy ({stats.get('energy', 0):,.2f} pJ) for {stats_file}.")
         elif stats.get('energy', 0) == 0 and parsed_sum > 0:
@@ -99,7 +94,7 @@ def parse_stats_file(stats_file):
 def plot_comparison(all_stats, workloads, sparsity_types, figures_dir):
     """Plot grouped bar charts comparing sparsity types for cycles and energy."""
 
-    display_workloads = [workload_display_names.get(w, w) for w in workloads] # Use display names
+    display_workloads = [workload_display_names.get(w, w) for w in workloads]
 
     if not all_stats:
         print("No data available for plotting.")
@@ -107,25 +102,22 @@ def plot_comparison(all_stats, workloads, sparsity_types, figures_dir):
 
     num_workloads = len(workloads)
     num_sparsity_types = len(sparsity_types)
-    x = np.arange(num_workloads)  # the label locations
-    width = 0.8 / num_sparsity_types  # the width of the bars
-    colors = ['red', 'blue'] # Define colors for the bars
+    x = np.arange(num_workloads)
+    width = 0.8 / num_sparsity_types
+    colors = ['red', 'blue']
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 6)) # Wider figure
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 6))
 
-    # --- Cycles Plot ---
     ax1.set_ylabel('Cycles')
     ax1.set_title('Cycles Comparison by Workload and Sparsity Type (at 50% Sparsity)')
     ax1.set_xticks(x)
-    ax1.set_xticklabels(display_workloads, rotation=45, ha="right") # Use display names
+    ax1.set_xticklabels(display_workloads, rotation=45, ha="right")
 
-    # --- Energy Plot ---
     ax2.set_ylabel('Energy (pJ)')
     ax2.set_title('Energy Comparison by Workload and Sparsity Type (at 50% Sparsity)')
     ax2.set_xticks(x)
-    ax2.set_xticklabels(display_workloads, rotation=45, ha="right") # Use display names
+    ax2.set_xticklabels(display_workloads, rotation=45, ha="right")
 
-    # Use sparsity_types keys directly for data access and labels
     sparsity_keys = list(all_stats.keys())
 
     for i, s_key in enumerate(sparsity_keys):
@@ -133,11 +125,9 @@ def plot_comparison(all_stats, workloads, sparsity_types, figures_dir):
         energy = [all_stats.get(s_key, {}).get(w, {}).get('energy', 0) for w in workloads]
 
         offset = width * (i - (num_sparsity_types - 1) / 2)
-        # Use the key directly as the label and specify color
         rects1 = ax1.bar(x + offset, cycles, width, label=s_key.replace('_', ' ').title(), color=colors[i % len(colors)])
         rects2 = ax2.bar(x + offset, energy, width, label=s_key.replace('_', ' ').title(), color=colors[i % len(colors)])
 
-        # Add value labels
         for rect in rects1:
              height = rect.get_height()
              if height > 0:
@@ -167,7 +157,7 @@ def create_dataframe(results, workloads):
     for workload in workloads:
         if workload in results:
              display_name = workload_display_names.get(workload, workload)
-             util_percent = results[workload].get('utilization', 0) * 100 # Convert 0-1 to %
+             util_percent = results[workload].get('utilization', 0) * 100
              row = {
                 'Workload': display_name,
                 'Cycles': results[workload].get('cycles', 0),
@@ -176,86 +166,69 @@ def create_dataframe(results, workloads):
             }
              data.append(row)
         else:
-            # Add placeholder if workload missing for one type
             display_name = workload_display_names.get(workload, workload)
             data.append({ 'Workload': display_name, 'Cycles': np.nan, 'Energy (pJ)': np.nan, 'Utilization (%)': np.nan})
 
     df = pd.DataFrame(data)
-    # Ensure workload column is first if processing order changed
     df = df[['Workload', 'Cycles', 'Energy (pJ)', 'Utilization (%)']]
     return df
 
 
-# --- Main Execution ---
 if __name__ == "__main__":
-    # Adjust base directory to the correct evaluation setup path
     script_dir = os.path.dirname(os.path.abspath(__file__))
     base_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
     output_dir = os.path.join(base_dir, 'outputs')
     figures_dir = os.path.join(output_dir, 'figures')
     os.makedirs(figures_dir, exist_ok=True)
 
-    # --- Updated Workload Definitions ---
-    workloads = ["resnet50_conv1", "alexnet_conv1", "mobilenet_conv1"] # Names used in sweep scripts
-    workload_display_names = { # Optional: Cleaner names for plots/tables
+    workloads = ["resnet50_conv1", "alexnet_conv1", "mobilenet_conv1"]
+    workload_display_names = {
         'resnet50_conv1': 'ResNet-50 C1',
         'alexnet_conv1': 'AlexNet C1',
         'mobilenet_conv1': 'MobileNetV1 C1'
     }
 
-    # --- Updated Result Dictionaries and Paths ---
     unstructured_results = {}
-    structured_results = {} # Renamed from ideal_results
+    structured_results = {}
 
     print("Parsing results...")
     for workload in workloads:
-        # Unstructured sparse architecture results
         unstructured_stats_file = os.path.join(output_dir, f"unstructured_{workload}", "timeloop-mapper.stats.txt")
         stats = parse_stats_file(unstructured_stats_file)
         if stats:
             unstructured_results[workload] = stats
 
-        # Structured 2:4 sparse architecture results
-        structured_stats_file = os.path.join(output_dir, f"structured_{workload}", "timeloop-mapper.stats.txt") # Updated path
+        structured_stats_file = os.path.join(output_dir, f"structured_{workload}", "timeloop-mapper.stats.txt")
         stats = parse_stats_file(structured_stats_file)
         if stats:
             structured_results[workload] = stats
 
-    # Combine results for plotting function
     all_stats = {
         'Unstructured': unstructured_results,
-        'Structured': structured_results # Updated key to 'Structured'
+        'Structured': structured_results
     }
 
-    # --- Updated Create DataFrames ---
     unstructured_df = create_dataframe(unstructured_results, workloads)
-    structured_df = create_dataframe(structured_results, workloads) # Renamed from ideal_df
+    structured_df = create_dataframe(structured_results, workloads)
 
-    # --- Updated Calculate Improvement Ratios ---
     if not unstructured_df.empty and not structured_df.empty:
-        # Ensure consistent workload order and handle missing data using merge
         comparison_df = pd.merge(unstructured_df, structured_df, on='Workload', suffixes=('_unstr', '_str'), how='outer')
 
-        # Calculate ratios - use .replace(0, np.nan) to avoid division by zero
         comparison_df['Cycle Ratio (Unstructured/Structured)'] = comparison_df['Cycles_unstr'] / comparison_df['Cycles_str'].replace(0, np.nan)
         comparison_df['Energy Ratio (Unstructured/Structured)'] = comparison_df['Energy (pJ)_unstr'] / comparison_df['Energy (pJ)_str'].replace(0, np.nan)
         comparison_df['Utilization Ratio (Structured/Unstructured)'] = comparison_df['Utilization (%)_str'] / comparison_df['Utilization (%)_unstr'].replace(0, np.nan)
 
-        # Select and reorder columns for the final comparison table
         comparison_df = comparison_df[['Workload', 'Cycle Ratio (Unstructured/Structured)',
                                        'Energy Ratio (Unstructured/Structured)', 'Utilization Ratio (Structured/Unstructured)']]
     else:
         comparison_df = pd.DataFrame(columns=['Workload', 'Cycle Ratio (Unstructured/Structured)',
                                               'Energy Ratio (Unstructured/Structured)', 'Utilization Ratio (Structured/Unstructured)'])
 
-    # --- Updated Energy Breakdown Printing ---
     print("\nEnergy Breakdown by Hardware Level:")
     print("=" * 60)
-    # Use the combined all_stats dictionary
     for arch_name, results in all_stats.items():
-        print(f"\n{arch_name} Architecture:") # Use key directly
+        print(f"\n{arch_name} Architecture:")
 
-        # Filter workloads present in the current result set
         available_workloads = [w for w in workloads if w in results]
 
         if not available_workloads:
@@ -269,9 +242,8 @@ if __name__ == "__main__":
                 total_energy = results[workload].get('energy', 0)
 
                 if level_energy and total_energy > 0:
-                    print(f"\n  {display_name}:") # Use display name
-                    # Sort levels for consistent output (optional but nice)
-                    sorted_levels = sorted(level_energy.items(), key=lambda item: item[0]) # Sort by key e.g. "L0_MAC"
+                    print(f"\n  {display_name}:")
+                    sorted_levels = sorted(level_energy.items(), key=lambda item: item[0])
                     for level, energy in sorted_levels:
                         percentage = (energy / total_energy) * 100
                         print(f"    {level}: {energy:,.2f} pJ ({percentage:.2f}%)")
@@ -281,7 +253,6 @@ if __name__ == "__main__":
                  print(f"\n  {display_name}: Parsed stats missing 'level_energy' key.")
 
 
-    # --- Updated Display Summary ---
     print("\nPerformance Summary")
     print("=" * 60)
     print("Unstructured Sparse Architecture:")
@@ -290,19 +261,16 @@ if __name__ == "__main__":
     else:
         print("No data available")
 
-    print("\nStructured 2:4 Architecture:") # Updated title - Keep this specific title for the table if desired
-    if not structured_df.empty:
+    print("\nStructured 2:4 Architecture:")
+    if not structured_df.empty: 
         print(structured_df.to_string(index=False))
     else:
         print("No data available")
 
-    print("\nPerformance Ratios:") # Updated title
+    print("\nPerformance Ratios:")
     if not comparison_df.empty:
-        # Format ratios nicely
         print(comparison_df.to_string(index=False, float_format="%.2fx"))
     else:
         print("No data available for comparison")
 
-    # --- Updated Plotting Function Call ---
-    # Pass the combined dictionary and keys
     plot_comparison(all_stats, workloads, list(all_stats.keys()), figures_dir) 

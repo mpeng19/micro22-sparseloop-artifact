@@ -49,7 +49,6 @@ def run_timeloop(job_name, input_dict, ert_path, art_path, base_dir):
             print(job_name,  " reaches timeout limit")
             os.kill(p.pid, signal.SIGINT)
         
-        # since there will reuse of the results of existing runs in the core program, we make sure the results are successfully written
         counter = 0
         while counter <= 100 and not os.path.exists(os.path.join(output_dir, "timeloop-mapper.map+stats.xml")):
             time.sleep(1)
@@ -59,21 +58,16 @@ def run_timeloop(job_name, input_dict, ert_path, art_path, base_dir):
                 print("output causing this issue is: ", os.path.join(output_dir, "timeloop-mapper.map+stats.xml"))
                 sys.exit(1)  
 
-        # check if timeloop mapper succeeded
         outfile = os.path.join(output_dir, "timeloop-mapper.map.yaml")
         success = os.path.exists(outfile)
 
         if success:
-            # Construct the path for mappings_found (mirroring logic from the else block)
             path_elements = base_dir.split(os.sep)
-            design_name = path_elements[-1] # Assumes base_dir ends with design name
+            design_name = path_elements[-1]
             
             try: 
-                # mappings_found is relative to the script directory (this_directory)
                 mappings_found_base = os.path.abspath(os.path.join(this_directory, os.pardir, "mappings_found"))
                 
-                # Construct the target path within mappings_found using correct elements from base_dir
-                # Assumes base_dir = .../outputs/workload/WD-degree/instance/design
                 target_mapping_dir = os.path.join(mappings_found_base, PRECISION, 
                                                   path_elements[-4], # workload
                                                   path_elements[-3], # WD-degree
@@ -89,10 +83,10 @@ def run_timeloop(job_name, input_dict, ert_path, art_path, base_dir):
             except Exception as e:
                 print(f"WARN: Failed to auto-store mapping file for {job_name}.")
                 print(f"      Base dir structure might be unexpected: {base_dir}")
-                print(f"      Path elements: {path_elements}") # Added path elements print for debug
+                print(f"      Path elements: {path_elements}")
                 print(f"      Error: {e}")
 
-        return True # Return True even if mapping storage failed, as mapper itself succeeded
+        return True
     else:
         
         model_input_dict = deepcopy(input_dict)
@@ -100,7 +94,6 @@ def run_timeloop(job_name, input_dict, ert_path, art_path, base_dir):
         model_input_dict.pop("mapper")
         yaml.dump(model_input_dict, open(input_file_path, "w"), default_flow_style=False)
         
-        # generate corresponding mapping path
         path_elements = base_dir.split(os.sep)
         design_name = path_elements[-1]
         mapping_path = os.path.join(this_directory, os.pardir, "mappings_found", PRECISION, path_elements[-4], path_elements[-3], path_elements[-2], design_name, "map.yaml")
@@ -115,7 +108,6 @@ def run_timeloop(job_name, input_dict, ert_path, art_path, base_dir):
         subprocess_cmd = ["timeloop-model", input_file_path, os.path.join(base_dir, "ERT.yaml"), os.path.join(base_dir, "ART.yaml"), os.path.join(base_dir, "map.yaml")]
         p = subprocess.Popen(subprocess_cmd)
         
-        # since there will reuse of the results of existing runs in the core program, we make sure the results are successfully written
         counter = 0
         while not os.path.exists(os.path.join(output_dir, "timeloop-model.map+stats.xml")):
             counter = counter + 1
@@ -238,14 +230,14 @@ def process_format(design_point, aggregated_input):
 
 def process_instance_dimension(design_point, aggregated_input):
     
-    # pprint.pprint(design_point)
+    #pprint.pprint(design_point)
     
     if not  "sparsity_schemes" in design_point["configurations"]:
         return aggregated_input
 
     sparsity_scheme = design_point["configurations"]["sparsity_schemes"]["W"]
     
-    # pad the K dimension such that the structure is well maintained in the workload
+    #pad the K dimension such that the structure is well maintained in the workload
     if sparsity_scheme == "dense":
         return aggregated_input
     
@@ -275,7 +267,7 @@ def process_instance_dimension(design_point, aggregated_input):
         if not padded_K == orig_K:
             print("padding applied to maintain structure: padded K: ", padded_K, "  orig K: ", orig_K)
     
-    # 2-6 needs special padding
+    #2-6 needs special padding
     if design_point["configurations"]["sparsity_schemes"] == "2-6":
         ratio = 6/2
         min_spatial_K = int(16*ratio)
@@ -388,9 +380,7 @@ def derive_density_scheme(degree_to_scheme, design_point):
 
     design_point["configurations"]["sparsity_schemes"] = {"W": "dense", "I": "dense"}
     
-    # ========================================================== 
-    # Generate the sparsity schemes for different architectures
-    # ==========================================================
+    #Generate the sparsity schemes for different architectures
     if WD_degree == 1.0 and IAD_degree == 1.0:
         if ("sparse_optimizations" in design_point["configurations"]):
             design_point["configurations"].pop("sparse_optimizations")
@@ -444,9 +434,7 @@ def derive_density_scheme(degree_to_scheme, design_point):
         else:
             experiment_key = experiment_key + "-IADU1.0"
     
-    # ==============================================================
-    # Select correct architecture setup and/or sparse optimizations
-    # ===============================================================
+    #Select correct architecture setup and/or sparse optimizations
     if "DSTC" in base_design:
         is_special_bw = "DSTC-RF2x-24-bandwidth" in design_point["design_name"] 
         if IAD_degree < 0.8 or WD_degree < 0.8:
@@ -478,17 +466,11 @@ def derive_density_scheme(degree_to_scheme, design_point):
 
 
 def top(workload, density_degrees, verbose, max_layers, layer_idx=None):
-    # ------------------------------------------------------------------ #
-    # 0.  Results folder guard (unchanged)
-    # ------------------------------------------------------------------ #
     if not os.path.exists(os.environ["RESULTS_ROOT"]):
         os.makedirs(os.environ["RESULTS_ROOT"])
 
     experiment_record = {}
 
-    # ------------------------------------------------------------------ #
-    # 1.  Common templates (unchanged)
-    # ------------------------------------------------------------------ #
     template_root      = os.environ["SYSTEM_TEMPLATES_ROOT"]
     compound_components = yaml.load(open(os.path.join(
         template_root, "../../components/compound_components.yaml")), Loader=yaml.SafeLoader)
@@ -500,19 +482,12 @@ def top(workload, density_degrees, verbose, max_layers, layer_idx=None):
     sweep_yaml = yaml.load(open(os.path.join(
         template_root, "design_points", sweep_name + ".yaml")), Loader=yaml.SafeLoader)
 
-    # ------------------------------------------------------------------ #
-    # 2.  **Filter to STC & DSTC only**                                  *
-    # ------------------------------------------------------------------ #
+    #Filter to STC & DSTC only
     valid_designs = {"STC-RF2x-24-bandwidth", "DSTC-RF2x-24-bandwidth"}
     design_points = [d for d in sweep_yaml["design_points"]
                      if d["design_name"] in valid_designs]
 
-    # ------------------------------------------------------------------ #
-    # 3.  Iterate over weight-density degrees and layers (unchanged)     *
-    # ------------------------------------------------------------------ #
     for WD_degree in density_degrees:
-        # Construct the workload pkl path dynamically
-        # IMPORTANT: Assumes pkl file naming convention includes density!
         relative_path = os.path.join("pkl_specs", f"{workload}_specs.{WD_degree}.pkl")
         path = os.path.join(os.environ.get("WORKLOADS"), relative_path)
         
@@ -527,20 +502,17 @@ def top(workload, density_degrees, verbose, max_layers, layer_idx=None):
             IAD_degree = instance_name.split("-IAD")[1].split("-")[0]
 
             for dp in design_points:
-                # ------------------------------------------------------ #
-                # 3.1 Clone and **force uncompressed on DSTC & STC**     *
-                # ------------------------------------------------------ #
                 dp = deepcopy(dp)
                 if dp["design_name"].startswith("DSTC"):
                    dp.setdefault("configurations", {})["representation"] = "U"
                 if dp["design_name"].startswith("STC"):
-                    dp.setdefault("configurations", {})["representation"] = "U" # Force Uncompressed for STC as well
+                    dp.setdefault("configurations", {})["representation"] = "U"
 
                 dp["workload"] = {"name": workload,
                                   "density degrees": {"A": WD_degree, "B": IAD_degree}}
                 dp = derive_density_scheme(degree_to_scheme["designs"], dp)
 
-                # --- Remove sparse optimizations for STC/DSTC --- 
+                #Remove specific buggy sparse optimizations for STC/DSTC
                 if dp["design_name"].startswith("DSTC") or dp["design_name"].startswith("STC"):
                     if "sparse_optimizations" in dp.get("configurations", {}):
                         if dp['configurations']['sparse_optimizations'] == "LRF-PosTiling":
@@ -548,9 +520,6 @@ def top(workload, density_degrees, verbose, max_layers, layer_idx=None):
                         elif dp['configurations']['sparse_optimizations'] == "RF-spatial-skipping":
                             dp["configurations"].pop("sparse_optimizations")
 
-                # ------------------------------------------------------ #
-                # 3.2 Destination folder and duplicate-result check      *
-                # ------------------------------------------------------ #
                 out_dir = os.path.join(os.environ["RESULTS_ROOT"],
                                        workload, f"WD-{WD_degree}", instance_name,
                                        dp["design_name"])
@@ -560,9 +529,6 @@ def top(workload, density_degrees, verbose, max_layers, layer_idx=None):
                     shutil.copytree(experiment_record[exp_key], out_dir, dirs_exist_ok=True)
                     continue
 
-                # ------------------------------------------------------ #
-                # 3.3 Build input_templates (unchanged logic)           *
-                # ------------------------------------------------------ #
                 input_templates = {
                     "compound_components": compound_components,
                     "mapper": mapper,
@@ -589,10 +555,8 @@ def top(workload, density_degrees, verbose, max_layers, layer_idx=None):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(""" sweep various workloads (DNN layers) for different accelerator designs """)
-    # --- Add workload argument --- 
     parser.add_argument('--workload', type=str, required=True, choices=['resnet50_selected', 'alexnet_selected', 'mobilenetv2_selected'],
                         help='Name of the model workload to run (e.g., resnet50_selected).')
-    # --- Keep existing arguments --- 
     parser.add_argument('-d', '--design_point', type=str, default= "MICRO22-STC-Case-Study", help="design point file to run, any file name in ../arch_templates/HW_systems/design_points/...")
     parser.add_argument('-o', '--output_dir', type=str, default=os.path.join(this_directory, os.pardir, "outputs"), help='top level output directory' )
     parser.add_argument('--layer_idx', type=int, default=None, help='specific layer idex to run')
@@ -602,14 +566,13 @@ if __name__ == '__main__':
     parser.add_argument('--search_mapping', action="store_true", help="explore mappings instead of use the mappings already found")
     options = parser.parse_args()
     
-    # global vars setup from args
+    #vars setup from args
     MAX_LAYERS = options.max_layers
-    OVERWRITE = True # Defaulting overwrite to True as per original global var
+    OVERWRITE = True
     VERBOSE = options.verbose
-    PRECISION = "int8" # Keep fixed
+    PRECISION = "int8"
     USE_MODEL = not options.search_mapping
     
-    # Use parsed workload
     workload = options.workload 
     sweep_name = options.design_point        
     os.environ["SYSTEM_TEMPLATES_ROOT"] = os.path.abspath(os.path.join(this_directory, '../architecture_templates/HW_systems'))

@@ -13,7 +13,7 @@ def merge_yamls(file_paths):
         try:
             with open(file_path, 'r') as f:
                 data = yaml.safe_load(f)
-                if data: # Check if file is not empty
+                if data:
                     merged_data.update(data)
         except FileNotFoundError:
             print(f"Error: File not found - {file_path}", file=sys.stderr)
@@ -58,7 +58,6 @@ def main():
     args = parser.parse_args()
     mode = args.mode
 
-    # Base directories using pathlib
     script_dir = Path(__file__).parent.resolve()
     base_dir = script_dir.parent
     output_base = base_dir / "outputs"
@@ -66,11 +65,9 @@ def main():
     workload_dir = base_dir / "workload"
     sparse_opt_dir = base_dir / "sparse-opt"
 
-    # Create base output directories
     output_base.mkdir(parents=True, exist_ok=True)
     mappings_base.mkdir(parents=True, exist_ok=True)
 
-    # Per-mode config
     if mode == "unstructured":
         arch_file = base_dir / "arch" / "unstructured_sparse_tensor_core.yaml"
         dataflow_file = base_dir / "dataflow" / "unstructured_dataflow.yaml"
@@ -117,7 +114,6 @@ def main():
         tmp_out_dir.mkdir(parents=True, exist_ok=True)
         final_out_dir.mkdir(parents=True, exist_ok=True)
 
-        # --- Stage 1: Mapping Search ---
         print("--- Stage 1: Mapping Search ---")
         aggregated_input_file = tmp_out_dir / "aggregated_inputs.yaml"
         map_out_file = tmp_out_dir / "timeloop-mapper.map.yaml"
@@ -139,7 +135,6 @@ def main():
             shutil.rmtree(tmp_out_dir)
             continue
 
-        # Run Timeloop Mapper (Stage 1)
         cmd_stage1 = [
             "timeloop-mapper",
             aggregated_input_file,
@@ -153,7 +148,6 @@ def main():
             shutil.rmtree(tmp_out_dir)
             continue
 
-        # Check if map file exists and copy it
         if not map_out_file.is_file():
             print(f"Mapping search completed but map file {map_out_file} not found for {w}. Skipping.", file=sys.stderr)
             shutil.rmtree(tmp_out_dir)
@@ -169,10 +163,8 @@ def main():
 
         shutil.rmtree(tmp_out_dir)
 
-        # --- Stage 2: Model Evaluation ---
         print("--- Stage 2: Model Evaluation ---")
 
-        # Run Timeloop Mapper (Stage 2 - Using individual files + found map)
         cmd_stage2 = [
             "timeloop-mapper",
             arch_file,
